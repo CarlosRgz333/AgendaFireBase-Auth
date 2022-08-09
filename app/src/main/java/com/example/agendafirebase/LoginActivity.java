@@ -4,13 +4,14 @@ import static android.content.ContentValues.TAG;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.util.PatternsCompat;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -27,56 +28,78 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.regex.Pattern;
 
-public class RegistroActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private EditText txtUsuario, txtPass;
+    private TextView lblRegistrar;
     private Button btnLogin;
     private boolean validacion = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_registro);
-
-        txtUsuario = (EditText) findViewById(R.id.txtUsuarioReg);
-        txtPass = (EditText) findViewById(R.id.txtPassReg);
-        btnLogin = (Button) findViewById(R.id.btnRegistrar);
+        setContentView(R.layout.activity_login);
+        txtUsuario = (EditText) findViewById(R.id.txtUsuario);
+        txtPass =(EditText) findViewById(R.id.txtPass);
+        btnLogin = (Button) findViewById(R.id.btnIngresar);
+        lblRegistrar = (TextView) findViewById(R.id.lblRegistrar);
         mAuth = FirebaseAuth.getInstance();
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 validacion = true;
-
                 if(txtUsuario.getText().toString().equals("") || txtPass.getText().toString().equals("")){
-                    Toast.makeText(RegistroActivity.this, "Capture todos los datos.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "Capture todos los datos.", Toast.LENGTH_SHORT).show();
                     if(txtUsuario.getText().toString().equals("")){
                         txtUsuario.setError("Introduzca el correo");
                         validacion = false;
                     }
                     if(txtPass.getText().toString().equals("")){
                         txtPass.setError("Introduzca la contraseña");
-
                         validacion = false;
                     }
                 }
-                //validarEmail(txtUsuario.getText().toString())
                 if(!validarEmail(txtUsuario.getText().toString())){
                     txtUsuario.setError("Introduzca un correo valido");
                     validacion = false;
                 }
-                if(txtPass.getText().toString().length()<6){
-                    txtPass.setError("La contraseña debe tener mas de 6 caracteres");
-                    validacion = false;
-                }
 
                 if(validacion){
-                    crearUsuario(txtUsuario.getText().toString(), txtPass.getText().toString());
+                    iniciarSesion(txtUsuario.getText().toString(), txtPass.getText().toString());
                 }
+
 
 
             }
         });
+
+        lblRegistrar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(LoginActivity.this, RegistroActivity.class);
+                startActivity(i);
+                limpiar();
+            }
+        });
+    }
+
+    public void limpiar(){
+        txtUsuario.setError(null);
+        txtPass.setError(null);
+        txtUsuario.setText("");
+        txtPass.setText("");
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            Intent i = new Intent(LoginActivity.this, MainActivity.class);
+            startActivity(i);
+        }
 
     }
 
@@ -84,55 +107,48 @@ public class RegistroActivity extends AppCompatActivity {
         boolean emailValid;
         if(Patterns.EMAIL_ADDRESS.matcher(email).matches()){
             emailValid = true;
-            //Toast.makeText(RegistroActivity.this, "Email Valido", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(LoginActivity.this, "Email Valido", Toast.LENGTH_SHORT).show();
         }else{
-            //Toast.makeText(RegistroActivity.this, "Email Invalido", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(LoginActivity.this, "Email Invalido", Toast.LENGTH_SHORT).show();
             emailValid = false;
         }
         return emailValid;
     }
 
-    private void crearUsuario(String email, String password){
+    public void iniciarSesion(String email, String password) {
+
+
         if(isNetworkAvailable()){
-            mAuth.createUserWithEmailAndPassword(email, password)
+            mAuth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(TAG, "createUserWithEmail:success");
+                                Log.d(TAG, "signInWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                updateUI(user);
-                                Toast.makeText(RegistroActivity.this, "Usuario Registrado",
-                                        Toast.LENGTH_SHORT).show();
-                                FirebaseAuth.getInstance().signOut();
+                                //updateUI(user);
+                                Intent i = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(i);
                                 finish();
-
                             } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(RegistroActivity.this, "Error al registrar el usuario",
-                                        Toast.LENGTH_SHORT).show();
-                                updateUI(null);
+                                Log.d(TAG, "signInWithEmail:failure", task.getException());
+                                Toast.makeText(LoginActivity.this, "Usuario y/o contraseña incorrectos.", Toast.LENGTH_SHORT).show();
+                                //updateUI(null);
                             }
                         }
                     });
         }else{
-            Toast.makeText(RegistroActivity.this, "Necesita Conexion a Internet",
-                    Toast.LENGTH_SHORT).show();
+            Toast.makeText(LoginActivity.this, "Necesita Conexion a Internet", Toast.LENGTH_SHORT).show();
         }
 
     }
-    private void reload() {
-    }
-    private void updateUI(FirebaseUser user) {
 
-    }
+
+
 
     public boolean isNetworkAvailable() {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo ni = cm.getActiveNetworkInfo();
         return ni != null && ni.isConnected();
     }
-
 }

@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.example.agendafirebase.Objetos.Contactos;
 import com.example.agendafirebase.Objetos.ReferenciasFirebase;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -30,6 +31,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
 
 public class ListaActivity extends ListActivity {
+    private FirebaseAuth mAuth;
     private FirebaseDatabase basedatabase;
     private DatabaseReference referencia;
     private Button btnNuevo, btnCerrarSesion;
@@ -40,6 +42,7 @@ public class ListaActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista);
         basedatabase = FirebaseDatabase.getInstance();
+        mAuth = FirebaseAuth.getInstance();
         referencia = basedatabase.getReferenceFromUrl(ReferenciasFirebase.URL_DATABASE +
                 ReferenciasFirebase.DATABASE_NAME + "/" +
                 ReferenciasFirebase.TABLE_NAME);
@@ -65,6 +68,18 @@ public class ListaActivity extends ListActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (!(currentUser != null)) {
+            Intent i = new Intent(ListaActivity.this, LoginActivity.class);
+            startActivity(i);
+        }
+
     }
 
     public void obtenerContactos() {

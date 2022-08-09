@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegistroActivity">
+    tools:context=".LoginActivity">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Registro"
+            android:text="Inicio de Sesion"
             android:textSize="40dp"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -30,9 +30,10 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/txtUsuarioReg"
+            android:id="@+id/txtUsuario"
             android:inputType="textEmailAddress"
             android:layout_marginBottom="15dp">
+
         </EditText>
         <TextView
             android:layout_width="match_parent"
@@ -43,18 +44,25 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/txtPassReg"
+            android:id="@+id/txtPass"
             android:inputType="textPassword"
             android:layout_marginBottom="30dp">
         </EditText>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Registrarse"
+            android:id="@+id/lblRegistrar"
+            android:textColor="@color/purple_200">
+        </TextView>
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/btnRegistrar"
-            android:text="Registrarse"
+            android:id="@+id/btnIngresar"
+            android:text="Ingresar"
             android:textSize="18dp"
             android:layout_marginBottom="50dp">
         </Button>
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

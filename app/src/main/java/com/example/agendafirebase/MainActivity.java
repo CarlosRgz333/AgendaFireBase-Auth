@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.example.agendafirebase.Objetos.Contactos;
 import com.example.agendafirebase.Objetos.ReferenciasFirebase;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -30,13 +32,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private DatabaseReference referencia;
     private Contactos savedContacto;
     private String id;
-
+    private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initComponents();
         setEvents();
+        mAuth = FirebaseAuth.getInstance();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (!(currentUser != null)) {
+            Intent i = new Intent(MainActivity.this, LoginActivity.class);
+            startActivity(i);
+        }
+
     }
 
     public void initComponents() {
@@ -103,6 +118,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case R.id.btnListar:
                     Intent i = new Intent(MainActivity.this, ListaActivity.class);
                     limpiar();
+                    finish();
                     startActivityForResult(i, 0);
                     break;
                 case R.id.btnLimpiar:
