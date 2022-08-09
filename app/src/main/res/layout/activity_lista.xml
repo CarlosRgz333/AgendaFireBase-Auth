@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".ListaActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -16,6 +16,12 @@
             android:layout_height="wrap_content"
             android:id="@+id/btnNuevo"
             android:text="@string/nuevo">
+        </Button>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btnCerrarSession"
+            android:text="Cerrar Sesion">
         </Button>
         <TextView
             android:layout_width="match_parent"
@@ -34,5 +40,7 @@
             android:paddingTop="20dp"
             android:layout_below="@id/lblDisponibles">
         </ListView>
-    </RelativeLayout>
+
+    </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
